@@ -1,0 +1,22 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "setup.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "lxd",
+      "name": "apk-build",
+      "image": "images:alpine/edge",
+      "profile": "builder",
+      "output_image": "apk-build",
+      "publish_properties": {
+        "description": "Application Builder Kit"
+      }
+    }
+  ]
+}
