@@ -39,6 +39,8 @@ echo 'PACKAGER_PRIVKEY=/home/builder/.abuild/artello-builder.rsa' > /home/builde
 
 ssh-keyscan github.com > /home/builder/.ssh/known_hosts
 
+chmod 600 /home/builder/.ssh/id_rsa
+
 git clone https://github.com/artello/buildkite-agent ~/buildkite-agent
 
 cd /home/builder/buildkite-agent/.apk/artello/buildkite-agent && abuild checksum && abuild -r
