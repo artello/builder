@@ -1,12 +1,29 @@
 #!/bin/sh
 
+keys="
+  AWS_BUCKET \
+  LXD_REMOTE_URL \
+  LXD_REMOTE_NAME \
+  LXD_PASSWORD \
+  SSH_PRIVATE_KEY \
+  SSH_PUBLIC_KEY \
+  S3_CFG \
+  PRIVATE_KEY \
+  PUBLIC_KEY \
+"
+
+for k in ${keys}; do
+  ${k}=$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.${k})
+done
+
+
 sed -i '8,11 s/^/#/' /etc/inittab
 echo "Artello Builder" > /etc/motd
 
 echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
 
 apk update
-apk add alpine-sdk s6 postgresql postgresql-contrib redis s3cmd terraform openssh-client
+apk add alpine-sdk s6 postgresql postgresql-contrib redis s3cmd terraform lxd openssh-client bash
 
 rc-update add s6
 rc-update add s6-svscan
@@ -22,33 +39,53 @@ chgrp abuild /var/cache/distfiles
 chmod g+w /var/cache/distfiles
 echo '/home/builder/packages/artello' >> /etc/apk/repositories
 
-STORE_PATH="s3://$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.BUCKET)/packages/"
+STORE_PATH="s3://$AWS_BUCKET/packages/"
+HOME=/home/builder
+ABUILD=$HOME/.abuild
 
 sudo -u builder ash << EOF
 git config --global user.name "Artello Builder"
 git config --global user.email "builder@artello.app"
 
-mkdir -p /home/builder/.abuild
-mkdir -p /home/builder/.ssh
-echo "$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.SSH_PRIVATE_KEY)" > /home/builder/.ssh/id_rsa
-echo "$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.SSH_PUBLIC_KEY)" > /home/builder/.ssh/id_rsa.pub
-echo "$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.S3_CFG)" > /home/builder/.s3cfg
-echo "$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.PRIVATE_KEY)" > /home/builder/.abuild/artello-builder.rsa
-echo "$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.PUBLIC_KEY)" > /home/builder/.abuild/artello-builder.rsa.pub
-echo 'PACKAGER_PRIVKEY=/home/builder/.abuild/artello-builder.rsa' > /home/builder/.abuild/abuild.conf
+cd $HOME
 
-ssh-keyscan github.com > /home/builder/.ssh/known_hosts
+echo "--- Setup Terraform"
 
-chmod 600 /home/builder/.ssh/id_rsa
+wget https://github.com/sl1pm4t/terraform-provider-lxd/releases/download/v1.1.0/terraform-provider-lxd_v1.1.0_linux_amd64.zip
+unzip terraform-provider-lxd_*.zip
+
+mkdir -p $HOME/.terraform
+mv terraform-provider-lxd_v1.1.0_x4 ~/.terraform/terraform-provider-lxd
+
+echo "--- Setup LXD"
+
+lxd remote add $LXD_REMOTE_NAME $LXD_REMOTE_URL --password $LXD_REMOTE_PASSWORD --accept-certificate
+lxd remote set-default $LXD_REMOTE_NAME
+
+echo "--- Setup Builder"
+
+mkdir -p $ABUILD
+mkdir -p $HOME/.ssh
+
+echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/id_rsa
+echo "$SSH_PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
+echo "$S3_CFG" > $HOME/.s3cfg
+echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
+echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub
+echo 'PACKAGER_PRIVKEY=$ABUILD/artello-builder.rsa' > $ABUILD/abuild.conf
+
+ssh-keyscan github.com > $HOME/.ssh/known_hosts
+
+chmod 600 $HOME/.ssh/id_rsa
 
 git clone https://github.com/artello/buildkite-agent ~/buildkite-agent
 
-cd /home/builder/buildkite-agent/.apk/artello/buildkite-agent && abuild checksum && abuild -r
+cd $HOME/buildkite-agent/.apk/artello/buildkite-agent && abuild checksum && abuild -r
 
-s3cmd put /home/builder/.abuild/artello-builder.rsa.pub $STORE_PATH
+s3cmd put $ABUILD/artello-builder.rsa.pub $STORE_PATH
 EOF
 
-echo "$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.PUBLIC_KEY)" > /etc/apk/keys/artello-builder.rsa.pub
+echo "$PUBLIC_KEY" > /etc/apk/keys/artello-builder.rsa.pub
 
 apk update
 apk add buildkite-agent
