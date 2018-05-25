@@ -1,5 +1,15 @@
 #!/bin/sh
 
+set -e
+
+sed -i '8,11 s/^/#/' /etc/inittab
+echo "Artello Builder" > /etc/motd
+
+echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+
+apk update
+apk add alpine-sdk s6 postgresql postgresql-contrib redis s3cmd terraform lxd openssh-client bash
+
 keys="
   AWS_BUCKET \
   LXD_REMOTE_URL \
@@ -13,17 +23,8 @@ keys="
 "
 
 for k in ${keys}; do
-  ${k}=$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.${k})
+  export ${k}="$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.${k})"
 done
-
-
-sed -i '8,11 s/^/#/' /etc/inittab
-echo "Artello Builder" > /etc/motd
-
-echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
-
-apk update
-apk add alpine-sdk s6 postgresql postgresql-contrib redis s3cmd terraform lxd openssh-client bash
 
 rc-update add s6
 rc-update add s6-svscan
@@ -54,13 +55,13 @@ echo "--- Setup Terraform"
 wget https://github.com/sl1pm4t/terraform-provider-lxd/releases/download/v1.1.0/terraform-provider-lxd_v1.1.0_linux_amd64.zip
 unzip terraform-provider-lxd_*.zip
 
-mkdir -p $HOME/.terraform
-mv terraform-provider-lxd_v1.1.0_x4 ~/.terraform/terraform-provider-lxd
+mkdir -p $HOME/.terraform.d/plugins/linux_amd64
+mv terraform-provider-lxd_v1.1.0_x4 ~/.terraform.d/plugins/linux_amd64/terraform-provider-lxd
 
 echo "--- Setup LXD"
 
-lxd remote add $LXD_REMOTE_NAME $LXD_REMOTE_URL --password $LXD_REMOTE_PASSWORD --accept-certificate
-lxd remote set-default $LXD_REMOTE_NAME
+lxc remote add $LXD_REMOTE_NAME $LXD_REMOTE_URL --password $LXD_PASSWORD --accept-certificate
+lxc remote set-default $LXD_REMOTE_NAME
 
 echo "--- Setup Builder"
 
