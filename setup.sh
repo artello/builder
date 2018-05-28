@@ -8,10 +8,11 @@ echo "Artello Builder" > /etc/motd
 echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
 
 apk update
-apk add alpine-sdk s6 postgresql postgresql-contrib redis s3cmd terraform lxd openssh-client bash
+apk add alpine-sdk s6 jq postgresql postgresql-contrib go redis s3cmd terraform lxd openssh-client bash
 
 keys="
   AWS_BUCKET \
+  AWS_CREDENTIALS \
   LXD_REMOTE_URL \
   LXD_REMOTE_NAME \
   LXD_PASSWORD \
@@ -52,11 +53,9 @@ cd $HOME
 
 echo "--- Setup Terraform"
 
-wget https://github.com/sl1pm4t/terraform-provider-lxd/releases/download/v1.1.0/terraform-provider-lxd_v1.1.0_linux_amd64.zip
-unzip terraform-provider-lxd_*.zip
-
 mkdir -p $HOME/.terraform.d/plugins/linux_amd64
-mv terraform-provider-lxd_v1.1.0_x4 ~/.terraform.d/plugins/linux_amd64/terraform-provider-lxd
+go get -v -u github.com/sl1pm4t/terraform-provider-lxd
+mv $HOME/go/bin/terraform-provider-lxd ~/.terraform.d/plugins/linux_amd64/terraform-provider-lxd
 
 echo "--- Setup LXD"
 
@@ -67,10 +66,12 @@ echo "--- Setup Builder"
 
 mkdir -p $ABUILD
 mkdir -p $HOME/.ssh
+mkdir -p $HOME/.aws
 
 echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/id_rsa
 echo "$SSH_PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
 echo "$S3_CFG" > $HOME/.s3cfg
+echo "$AWS_CREDENTIALS" > $HOME/.aws/credentials
 echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
 echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub
 echo 'PACKAGER_PRIVKEY=$ABUILD/artello-builder.rsa' > $ABUILD/abuild.conf
@@ -90,3 +91,4 @@ echo "$PUBLIC_KEY" > /etc/apk/keys/artello-builder.rsa.pub
 
 apk update
 apk add buildkite-agent
+rm -rf $HOME/packages/artello
