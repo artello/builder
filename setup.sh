@@ -82,7 +82,7 @@ chmod 600 $HOME/.ssh/id_rsa
 
 git clone https://gitlab.com/artello/gitlab-runner ~/gitlab-runner
 
-cd $HOME/buildkite-agent/.apk/artello/buildkite-agent && abuild snapshot && abuild -r
+cd $HOME/gitlab-runner/.apk/artello/gitlab-runner && abuild snapshot && abuild -r
 
 s3cmd put $ABUILD/artello-builder.rsa.pub $STORE_PATH
 EOF
@@ -90,5 +90,5 @@ EOF
 echo "$PUBLIC_KEY" > /etc/apk/keys/artello-builder.rsa.pub
 
 apk update
-apk add buildkite-agent
+apk add gitlab-runner
 rm -rf $HOME/packages/artello
