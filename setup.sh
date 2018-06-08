@@ -76,13 +76,13 @@ echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
 echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub
 echo 'PACKAGER_PRIVKEY=$ABUILD/artello-builder.rsa' > $ABUILD/abuild.conf
 
-ssh-keyscan github.com > $HOME/.ssh/known_hosts
+ssh-keyscan gitlab.com > $HOME/.ssh/known_hosts
 
 chmod 600 $HOME/.ssh/id_rsa
 
-git clone https://github.com/artello/buildkite-agent ~/buildkite-agent
+git clone https://gitlab.com/artello/gitlab-runner ~/gitlab-runner
 
-cd $HOME/buildkite-agent/.apk/artello/buildkite-agent && abuild checksum && abuild -r
+cd $HOME/buildkite-agent/.apk/artello/buildkite-agent && abuild snapshot && abuild -r
 
 s3cmd put $ABUILD/artello-builder.rsa.pub $STORE_PATH
 EOF
