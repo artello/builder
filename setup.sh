@@ -51,6 +51,7 @@ echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
 echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub
 echo 'PACKAGER_PRIVKEY=$ABUILD/artello-builder.rsa' > $ABUILD/abuild.conf
 
+echo "export PAGER='more'" > $HOME/.profile
 echo "export PATH=/var/lib/google-cloud-sdk/bin:$PATH" > $HOME/.profile
 
 source $HOME/.profile
