@@ -24,8 +24,7 @@ apk add alpine-sdk \
         python
 
 curl --output google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-221.0.0-linux-x86_64.tar.gz
-mkdir -p /var/lib/google-cloud-sdk
-tar -xvf google-cloud-sdk.tar.gz -C /var/lib/google-cloud-sdk
+tar -xvf google-cloud-sdk.tar.gz -C /var/lib
 
 rc-update add s6
 rc-update add s6-svscan

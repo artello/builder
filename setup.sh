@@ -63,11 +63,11 @@ git clone https://gitlab.com/artello/gitlab-runner ~/gitlab-runner
 
 cd $HOME/gitlab-runner/.apk/artello/gitlab-runner && abuild snapshot && abuild -r
 
-# gsutil cp $ABUILD/artello-builder.rsa.pub $STORE_PATH
+gsutil cp $ABUILD/artello-builder.rsa.pub $STORE_PATH
 EOF
 
 echo "$PUBLIC_KEY" > /etc/apk/keys/artello-builder.rsa.pub
 
 apk update
-apk add gitlab-runner
+apk add gitlab-runner-openrc
 rm -rf $HOME/packages/artello
