@@ -2,23 +2,14 @@
 
 set -e
 
-sed -i '8,11 s/^/#/' /etc/inittab
-echo "Artello Builder" > /etc/motd
-
-echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
-
-apk update
-apk add alpine-sdk s6 jq postgresql postgresql-contrib go redis s3cmd terraform lxd openssh-client bash
-
 keys="
-  AWS_BUCKET \
-  AWS_CREDENTIALS \
+  GCS_BUCKET \
+  GCS_CREDENTIALS \
   LXD_REMOTE_URL \
   LXD_REMOTE_NAME \
   LXD_PASSWORD \
   SSH_PRIVATE_KEY \
   SSH_PUBLIC_KEY \
-  S3_CFG \
   PRIVATE_KEY \
   PUBLIC_KEY \
 "
@@ -27,27 +18,13 @@ for k in ${keys}; do
   export ${k}="$(curl -s --unix-socket /dev/lxd/sock x/1.0/config/user.${k})"
 done
 
-rc-update add s6
-rc-update add s6-svscan
-rc-update add postgresql
-rc-update add redis
-
-adduser --disabled-password --gecos "" builder
-echo 'builder ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
-
-addgroup builder abuild
-mkdir -p /var/cache/distfiles
-chgrp abuild /var/cache/distfiles
-chmod g+w /var/cache/distfiles
-echo '/home/builder/packages/artello' >> /etc/apk/repositories
-
-STORE_PATH="s3://$AWS_BUCKET/packages/"
+STORE_PATH="gs://$GCS_BUCKET/"
 HOME=/home/builder
 ABUILD=$HOME/.abuild
 
 sudo -u builder ash << EOF
 git config --global user.name "Artello Builder"
-git config --global user.email "builder@artello.app"
+git config --global user.email "builder@artello.network"
 
 cd $HOME
 
@@ -70,7 +47,6 @@ mkdir -p $HOME/.aws
 
 echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/id_rsa
 echo "$SSH_PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
-echo "$S3_CFG" > $HOME/.s3cfg
 echo "$AWS_CREDENTIALS" > $HOME/.aws/credentials
 echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
 echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub

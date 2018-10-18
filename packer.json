@@ -2,16 +2,31 @@
   "provisioners": [
     {
       "type": "shell",
-      "scripts": [
-        "setup.sh"
-      ]
+      "script": "initialize.sh"
+    },
+    {
+      "type": "shell",
+      "inline": ["mkdir -p /home/builder/.apk"]
+    },
+    {
+      "type": "file",
+      "source": ".apk",
+      "destination": "/home/builder/.apk"
+    },
+    {
+      "type": "shell",
+      "inline": ["chown -R builder:builder /home/builder/.apk"]
+    },
+    {
+      "type": "shell",
+      "script": "setup.sh"
     }
   ],
   "builders": [
     {
       "type": "lxd",
       "name": "apk-build",
-      "image": "images:alpine/edge",
+      "image": "images:alpine/3.8",
       "profile": "builder",
       "output_image": "apk-build",
       "publish_properties": {

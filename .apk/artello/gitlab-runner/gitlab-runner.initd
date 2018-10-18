@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+
+name="gitlab-runner"
+supervisor="s6"
+s6_service_path="${RC_SVCDIR}/s6-scan/${name}"
+
+depend() {
+  need s6-svscan net
+}
+
+start_pre() {
+  if [ ! -L "${RC_SVCDIR}/s6-scan/${name}" ]; then
+    ln -s "/var/lib/${name}/service" "${RC_SVCDIR}/s6-scan/${name}"
+  fi
+}
