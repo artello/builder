@@ -21,7 +21,10 @@ apk add alpine-sdk \
         lxd \
         openssh-client \
         bash \
-        python
+        python \
+        py-crcmod
+
+
 
 curl --output google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-221.0.0-linux-x86_64.tar.gz
 tar -xvf google-cloud-sdk.tar.gz -C /var/lib
