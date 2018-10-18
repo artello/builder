@@ -59,7 +59,7 @@ package() {
   install -dm755 -o $pkgusers -g $pkggroups ./etc/"$pkgname"
 
   install -Dm755 "$builddir"/$pkgname.initd ./etc/init.d/$pkgname
-  install -Dm755 "$builddir"/"$pkgname-linux-amd64" ./usr/bin/$pkgname
+  install -Dm755 "$builddir"/"gitlab-runner-linux-amd64" ./usr/bin/gitlab-runner
   install -Dm644 "$builddir"/config.toml ./etc/$pkgname/config.toml
   install -Dm755 "$builddir"/run ./var/lib/$pkgname/service/run
 }
