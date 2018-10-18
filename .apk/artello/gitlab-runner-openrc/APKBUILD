@@ -1,6 +1,6 @@
 # Contributor: Zack Siri <zack@artellectual.com>
 # Maintainer: Zack Siri <zack@artellectual.com>
-pkgname=gitlab-runner
+pkgname=gitlab-runner-openrc
 pkgdesc="Gitlab Runner"
 pkgver=10.8.0
 pkgrel=2

@@ -43,11 +43,17 @@ echo "--- Setup Builder"
 mkdir -p $ABUILD
 mkdir -p $HOME/.ssh
 
+chsh -s /bin/bash
+
 echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/id_rsa
 echo "$SSH_PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
 echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
 echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub
 echo 'PACKAGER_PRIVKEY=$ABUILD/artello-builder.rsa' > $ABUILD/abuild.conf
+
+echo "export PATH=/var/lib/google-cloud-sdk/bin:$PATH" > $HOME/.profile
+
+source $HOME/.profile
 
 ssh-keyscan gitlab.com > $HOME/.ssh/known_hosts
 
@@ -57,7 +63,7 @@ git clone https://gitlab.com/artello/gitlab-runner ~/gitlab-runner
 
 cd $HOME/gitlab-runner/.apk/artello/gitlab-runner && abuild snapshot && abuild -r
 
-s3cmd put $ABUILD/artello-builder.rsa.pub $STORE_PATH
+# gsutil cp $ABUILD/artello-builder.rsa.pub $STORE_PATH
 EOF
 
 echo "$PUBLIC_KEY" > /etc/apk/keys/artello-builder.rsa.pub

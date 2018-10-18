@@ -6,9 +6,6 @@ echo "Artello Builder" > /etc/motd
 
 echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
 
-curl --output google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-221.0.0-linux-x86_64.tar.gz
-tar -xvf google-cloud-sdk.tar.gz -C /var/lib/google-cloud-sdk
-
 apk update
 apk add alpine-sdk \
         curl \
@@ -16,6 +13,7 @@ apk add alpine-sdk \
         jq \
         postgresql \
         postgresql-contrib \
+        linux-headers \
         go \
         redis \
         shadow \
@@ -24,6 +22,10 @@ apk add alpine-sdk \
         openssh-client \
         bash \
         python
+
+curl --output google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-221.0.0-linux-x86_64.tar.gz
+mkdir -p /var/lib/google-cloud-sdk
+tar -xvf google-cloud-sdk.tar.gz -C /var/lib/google-cloud-sdk
 
 rc-update add s6
 rc-update add s6-svscan

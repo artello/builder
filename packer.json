@@ -25,10 +25,10 @@
   "builders": [
     {
       "type": "lxd",
-      "name": "apk-build",
+      "name": "builder",
       "image": "images:alpine/3.8",
       "profile": "builder",
-      "output_image": "apk-build",
+      "output_image": "artello-builder",
       "publish_properties": {
         "description": "Application Builder Kit"
       }
