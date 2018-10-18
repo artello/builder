@@ -4,7 +4,6 @@ set -e
 
 keys="
   GCS_BUCKET \
-  GCS_CREDENTIALS \
   LXD_REMOTE_URL \
   LXD_REMOTE_NAME \
   LXD_PASSWORD \
@@ -43,11 +42,9 @@ echo "--- Setup Builder"
 
 mkdir -p $ABUILD
 mkdir -p $HOME/.ssh
-mkdir -p $HOME/.aws
 
 echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/id_rsa
 echo "$SSH_PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
-echo "$AWS_CREDENTIALS" > $HOME/.aws/credentials
 echo "$PRIVATE_KEY" > $ABUILD/artello-builder.rsa
 echo "$PUBLIC_KEY" > $ABUILD/artello-builder.rsa.pub
 echo 'PACKAGER_PRIVKEY=$ABUILD/artello-builder.rsa' > $ABUILD/abuild.conf
