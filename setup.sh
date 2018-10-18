@@ -25,8 +25,6 @@ sudo -u builder ash << EOF
 git config --global user.name "Artello Builder"
 git config --global user.email "builder@artello.network"
 
-cd $HOME
-
 echo "--- Setup Terraform"
 
 mkdir -p $HOME/.terraform.d/plugins/linux_amd64
@@ -59,9 +57,7 @@ ssh-keyscan gitlab.com > $HOME/.ssh/known_hosts
 
 chmod 600 $HOME/.ssh/id_rsa
 
-git clone https://gitlab.com/artello/gitlab-runner ~/gitlab-runner
-
-cd $HOME/gitlab-runner/.apk/artello/gitlab-runner && abuild snapshot && abuild -r
+cd $HOME/.apk/base/gitlab-runner-openrc && abuild snapshot && abuild -r
 
 gsutil cp $ABUILD/artello-builder.rsa.pub $STORE_PATH
 EOF
