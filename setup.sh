@@ -30,11 +30,6 @@ mkdir -p $HOME/.terraform.d/plugins/linux_amd64
 go get -v -u github.com/sl1pm4t/terraform-provider-lxd
 mv $HOME/go/bin/terraform-provider-lxd ~/.terraform.d/plugins/linux_amd64/terraform-provider-lxd
 
-echo "--- Setup LXD"
-
-lxc remote add $LXD_REMOTE_NAME $LXD_REMOTE_URL --password $LXD_PASSWORD --accept-certificate
-lxc remote set-default $LXD_REMOTE_NAME
-
 echo "--- Setup Builder"
 
 mkdir -p $ABUILD

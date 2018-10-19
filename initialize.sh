@@ -17,8 +17,6 @@ apk add alpine-sdk \
         go \
         redis \
         shadow \
-        terraform \
-        lxd \
         openssh-client \
         bash \
         python \
