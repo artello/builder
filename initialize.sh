@@ -15,6 +15,7 @@ apk add alpine-sdk \
         postgresql-contrib \
         linux-headers \
         go \
+        terraform \
         redis \
         shadow \
         openssh-client \
