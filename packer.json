@@ -27,7 +27,7 @@
       "type": "lxd",
       "name": "builder",
       "image": "images:alpine/3.8",
-      "profile": "builder",
+      "profile": "boostrap",
       "output_image": "artello-builder",
       "publish_properties": {
         "description": "Application Builder Kit"
