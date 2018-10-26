@@ -23,7 +23,7 @@ apk add alpine-sdk \
         python \
         py-crcmod
 
-curl --output google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-221.0.0-linux-x86_64.tar.gz
+curl --output google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-222.0.0-linux-x86_64.tar.gz
 tar -xvf google-cloud-sdk.tar.gz -C /var/lib
 
 go get -v -u github.com/googlecloudplatform/gcsfuse
